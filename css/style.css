@@ -1,0 +1,5 @@
+body { min-height: 100vh; }
+.card { border: 0; }
+.table td, .table th { white-space: nowrap; }
+.badge-active { background-color: #198754; }
+.badge-inactive { background-color: #6c757d; }
