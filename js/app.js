@@ -65,7 +65,23 @@ function renderTable(snapshot) {
   });
   tbody.innerHTML = rows;
 }
+//Validation
+const EMAIL_REGEX = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+const PHONE_REGEX = /^[0-9+\s-]{8,15}$/;
 
+function validateVolunteer(data, editingId) {
+  if (data.fullName.length < 2) return "Full name must be at least 2 characters.";
+  if (!EMAIL_REGEX.test(data.email)) return "Please enter a valid email address (e.g. name@example.com).";
+  if (!PHONE_REGEX.test(data.phone)) return "Phone number must be 8-15 digits (digits, +, spaces and - allowed).";
+
+  // Prevent duplicate emails (ignore the record being edited)
+  const duplicate = Object.entries(volunteersCache).some(
+    ([id, v]) => id !== editingId && v.email.toLowerCase() === data.email.toLowerCase()
+  );
+  if (duplicate) return "A volunteer with this email is already registered.";
+
+  return null;
+}
 //create and update
 form.addEventListener("submit", async e => {
   e.preventDefault();
@@ -85,6 +101,11 @@ form.addEventListener("submit", async e => {
   };
 
   const editingId = volunteerIdInput.value;
+    const validationError = validateVolunteer(data, editingId);
+  if (validationError) {
+    showAlert(validationError, "danger");
+    return;
+  }
 
   try {
     if (editingId) {
